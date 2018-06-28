@@ -1,0 +1,67 @@
+---
+title: "R tutorial for Muasya lab"
+author: "Ruan van Mazijk"
+date: "June 2018"
+output: 
+  html_document:
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = TRUE,
+    warning = TRUE
+)
+```
+
+This is a basic intro to R, and an example of the most common workflow I employ when using R.
+
+# What is R?
+
+R is a free, open-source programming language. Though a programming language in the strictest sense, what sets it apart from other general purpose languages (e.g. Python, C++) is the variety of statistical methods and data-manipulation operations it affords the user, and the ease with which these can be used as encapsulated in simple functions. This means it may be more appropriate to think of R as a language-based environment for statistical analyses.
+
+# Setting up R for yourself
+
+R is available for download from the "The Comprehensive R Archive Network" (CRAN): <https://cran.r-project.org/>. Simply download the version for your platform and install.
+
+This R download comes by default with its own user interface. You can use it if you wish, but I recommend [RStudio](https://www.rstudio.com/products/rstudio/download/) instead as a means to interact with R.
+
+RStudio is a more user-friendly interface. It consists of four "panels" in its interface:
+
+1. Top-left: the "Source", or script-editor, where we will write and modify our saved R-scripts
+2. Bottom-left: the "Console", where R code is run directly---i.e. sent to R's "brain"
+3. Top-right: the "Environment", where we can see what objects and values your current R-session has in memory, and "History", where we see a record of recently executed R-code
+4. Bottom-right: the "Files", "Plots", "Packages", and "Help" tabs, discussed later
+
+The general idea is that you execute R-code either by typing directly into the console, or "running" code from the source using the "Run" button. Pressing "Run" while your cursor is on line 1 of the source editor sends line 1 to the console for execution.
+
+# Example R workflow
+
+So, let's take an example. Let's say you have some data (hopefully in a CSV and *not* an Excel spreadsheet), and want to make some scatterplots and fit a few linear regressions. Let's say you also want to compare model-fits between some regression models, or plot your model's predicted curves. You'd probably also want *save* your figures.
+
+Let's do that! Before we get started, I recommend doing all these things in one folder (from hereon called `my-analysis/`). That means your data is in there, and this is where we will store our script, and where we will save the outputted figures.
+
+## Setting the working directory: telling R where we are working
+
+Here we tell R which folder to regard as the main folder for this session, relative to which we will refer to all files.
+
+First, ask R where it is currently looking (i.e. by "getting" the working directory)
+
+```{r}
+getwd()
+```
+
+This is where I am at the moment, but I want to be
+
+## Importing your data
+
+To start
+
+# R packages
+
+R packages represent bundles of functions and methods for specific computations. This is similar to the idea of modules from other languages.
+
+R has several "base" packages, each responsible for different aspects of day-to-day work in R. For example, "base" (the name of one of the base packages itself) handles basic programming things and arithmetic, "graphics" is what R uses to make plots, and "stats" is where statistical methods are deployed from.
+
+The reason I emphasise this is so that the idea of adding community-made, open-source ...

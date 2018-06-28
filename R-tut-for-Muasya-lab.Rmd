@@ -4,6 +4,8 @@ author: "Ruan van Mazijk"
 date: "June 2018"
 output: 
   html_document:
+    toc: yes
+    toc_float: yes
     number_sections: yes
 ---
 
@@ -30,11 +32,164 @@ This R download comes by default with its own user interface. You can use it if 
 RStudio is a more user-friendly interface. It consists of four "panels" in its interface:
 
 1. Top-left: the "Source", or script-editor, where we will write and modify our saved R-scripts
-2. Bottom-left: the "Console", where R code is run directly---i.e. sent to R's "brain"
+2. Bottom-left: the "Console", where R code is run directly---i.e. sent to R's "brain", and where text output from our code is displayed
 3. Top-right: the "Environment", where we can see what objects and values your current R-session has in memory, and "History", where we see a record of recently executed R-code
 4. Bottom-right: the "Files", "Plots", "Packages", and "Help" tabs, discussed later
 
 The general idea is that you execute R-code either by typing directly into the console, or "running" code from the source using the "Run" button. Pressing "Run" while your cursor is on line 1 of the source editor sends line 1 to the console for execution.
+
+# R language basics
+
+## Mathematical operations
+
+These are all kind of intuitive
+
+```{r}
+1 + 1
+4 - 1
+12 * 3
+12 / 3
+4 ^ 2
+```
+
+We can also compute logarithms, roots, etc.
+
+```{r}
+# Natural log
+log(4)
+# Log base 10 or base 2
+log10(4)
+log2(4)
+# Log with an arbitrary base
+logb(4, base = 3)
+# Square-root
+sqrt(4)
+# Or
+4 ^ (1/2)
+8 ^ (1/3)
+```
+
+Comments (i.e. unexecuted text) in R are preceded by the \# symbol, by the way.
+
+## Objects
+
+### Vectors & lists
+
+In R, everything that "exists" in a session is an object. We assign values (or components of other objects) into variables (which are objects!) using a little arrow (`<-`), not an equal sign.
+
+```{r}
+x <- 2
+```
+
+When we execute an object-call alone...
+
+```{r}
+x
+```
+
+... it displays the contents of that object. 
+
+Now, you may notice the little `[1]` to the left of the output. This is because almost all objects in R are "vectors". Even if an object only has one component, it is a vector of length 1. When we have multiple items (grouped together by concatenation using `c()`)...
+
+```{r}
+y <- c(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+y
+```
+
+...it displays them all. Should the output run onto multiple lines, the next line will have the index (e.g. `[63]`) of the first item on the new line, like so
+
+```{r include=FALSE}
+y <- seq(1, 100, 2)
+```
+
+```{r}
+y
+```
+
+We use what is essentially this notation if we wish to access a specific position's value...
+
+```{r}
+y[14]
+```
+
+...or set of positions' values...
+
+```{r}
+y[c(1, 18, 23)]
+```
+
+...or range of positions' values.
+
+```{r}
+y[10:20]
+```
+
+Vectors in R are composed of items of a single type (e.g. numerics, characters, logicals, etc.). Should you want to mix types, you must construct a "list", or else R will "coerce" all the items in the vector to the same type (usually character).
+
+```{r}
+my_good_vector <- 1:10
+typeof(my_good_vector)
+my_bad_vector <- c(1, 2, 3, 4, "Carex sp.", TRUE, FALSE)
+typeof(my_bad_vector)
+my_list <- list(1, "a", TRUE, "Carex sp.")
+typeof(my_list)
+```
+
+### Data-frames
+
+Data-frames are basically tables, and each column can have a different data type.
+
+Values in any column can even be `NA`, a special placeholder
+
+```{r, echo=FALSE}
+data <- data.frame(
+    x = seq(1, 10, 1),
+    y = seq(1, 19, 2),
+    something = letters[1:2]
+)
+```
+
+```{r}
+data
+```
+
+We extract (i.e. get values from) a data-frame with the following syntax: `data[row_index, column_index]`
+
+```{r}
+# The 1st row of the 1st column (i.e. 1 cell)
+data[1, 1]
+# The 6th row of the 2nd column
+data[6, 2]
+# The 1st and 5th rows of the 1st column
+data[c(1, 5), 1]
+# The 3rd row of every column
+data[3, ]
+# Every row of the 1st column
+data[, 1]
+# The 3rd to 8th rows of columns 1 and 2
+data[3:8, c(1, 2)]
+```
+
+We can also call on columns by names using the "extract dollar sign" `$`, but then we only specify the rows numerically
+
+```{r}
+data$x[1]
+data$y[2:7]
+```
+
+## Functions
+
+As I said above, everything that exists in R is an object. This includes functions. Also: *basically* everything that "happens" in R is a function.
+
+We've been using them a lot above (e.g. `typeof()` to get an objects type, `log()` for logarithms, etc.).
+
+Some other useful functions I encourage you to explore:
+
+- `length()`
+- `seq()`
+- `mean()`, `max()`, `median()`, etc.
+- `data.frame()`
+- `na.exclude()`
 
 # Example R workflow
 
@@ -52,11 +207,108 @@ First, ask R where it is currently looking (i.e. by "getting" the working direct
 getwd()
 ```
 
-This is where I am at the moment, but I want to be
+This is where I am at the moment (my default), but I want to be in `my-analysis/`. So, I need to "set" the working directory, relative to the current one
+
+```{r}
+setwd("my-analysis")
+getwd()
+```
+
+```{r, include=FALSE}
+knitr::opts_knit$set(root.dir = "my-analysis")
+```
+
+If I wanted to move to a directory completely outside of the default, you can do say `setwd("/Users/ruanvanmazijk/MSc-genome-ecophys/analyses")` or something, with a complete path.
 
 ## Importing your data
 
-To start
+Here, we *read* the CSV into the R-session, and assign it into an object so that we can access it in memory later in our session
+
+```{r}
+iris <- read.csv("iris.csv")
+```
+
+```{r, include=FALSE}
+iris <- iris[, -1]
+```
+
+This data-set comes preloaded in R, but I thought it useful to use it to show how we would import it were it in CSV format. It contains morphological data for various Iris spp. Let's look at our data now.
+
+## Exploring your data
+
+The `iris` data-frame is quite big, and we don't want to overwhelm our console with hundreds of lines of numbers. Instead, let's just look at the first 6 rows (`head()`). We might also want to know what "types" of data R has interpreted to be in each column of our data-frame (`summary()`)
+
+```{r}
+head(iris)
+summary(iris)
+```
+
+Note that the `summary()` output displays a 5-number-summary for numeric data, and counts of each species as species has been interpreted as a category (a "factor" in R-lingo).
+
+## Exploratory scatter plots
+
+I am interested in the allometry between petal length and width, for example. To plot these variables against each other, do as follows
+
+```{r}
+# Syntax: plot(formula = y ~ x, data)
+plot(formula = Petal.Length ~ Petal.Width, data = iris)
+```
+
+You can also use the slightly different syntax `plot(formula = iris$Petal.Length ~ iris$Petal.Width)`, which lacks a data argument. You can also specify `x` and `y` directly (though note that now `x` is first)
+
+```{r}
+# Syntax: plot(x, y, data)
+plot(formula = Petal.Length ~ Petal.Width, data = iris)
+```
+
+## Models!
+
+### Fitting models
+
+I want to test the relationship we plotted above. The syntax is very similar!
+
+```{r}
+my_model <- lm(formula = iris$Sepal.Length ~ iris$Petal.Length)
+# Or
+my_model <- lm(formula = Sepal.Length ~ Petal.Length, data = iris)
+```
+
+### Model inspection and interpretation
+
+The raw model object is kind of uninformative and hard to read
+
+```{r}
+my_model
+```
+
+So, we employ one of the most useful functions in R: `summary()`. This function can be called on multiple object types (like we used for data-frames earlier). But on model objects it is your bread-and-butter
+
+```{r}
+summary(my_model)
+```
+
+## Plotting model fits
+
+Here I employ another one of R's strengths: community packages. The R community has made over 6000 packages, free for anyone to use. They are extra-add ons to R (I explain more below). The function `visreg()` (from the package also called visreg) takes a model object as an input and makes very nice plots of the data and fit for that model. Observe:
+
+```{r, eval=FALSE}
+# Install the package
+install.packages("visreg", dependencies = TRUE)
+# Load it into R's brain
+library(visreg)
+# Use the function "visreg" from the package "visreg"
+visreg::visreg(my_model)
+```
+
+```{r, echo=FALSE}
+visreg::visreg(my_model)
+```
+
+Note, the `package::function` syntax is optional. I could simply call on `visreg()` directly, as the package visreg has been loaded. But sometimes you don't want to load a whole package into memory (for e.g. on a very computationally intensive project) so we use `::` to steal one function only from a package, use it, and put it back.
+
+## Saving figures and outputs
+
+The simplest and easiest is to use the "Export" button in the plots pane in RStudio.
 
 # R packages
 
@@ -64,4 +316,18 @@ R packages represent bundles of functions and methods for specific computations.
 
 R has several "base" packages, each responsible for different aspects of day-to-day work in R. For example, "base" (the name of one of the base packages itself) handles basic programming things and arithmetic, "graphics" is what R uses to make plots, and "stats" is where statistical methods are deployed from.
 
-The reason I emphasise this is so that the idea of adding community-made, open-source ...
+The reason I emphasise this is so that the idea of adding community-made, open-source packages is that someone has likely encountered the problem your having in your work, and written functions and code that solves it neatly and reliably. So take advantage of that and Google around for packages that suit your needs. 
+
+Some I use very often include
+
+- `ggplot2` for more advanced figures
+- `tidyr` and `dplyr` for data-frame manipulation and reshaping
+- `raster` and `sp` for adding GIS functionality to R
+- `stringr` for advanced text manipulation and character matching (very good REGEX functionality)
+
+Some more esoteric/special-use packages include
+
+- `dismo` for making species distribution models
+- `taxize` for querying taxanomic databases with your species names, and for dealing with taxanomic hierarchies as objects in R
+- `pacman` for automated R package installation
+- `rmarkdown` for document preparation that relies on R input (how I made this tutorial!)
